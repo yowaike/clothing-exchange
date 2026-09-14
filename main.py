@@ -2,7 +2,7 @@ from datetime import datetime
 
 
 def add_item(owner_name, item_name, size, condition):
-    print("\n--- Добавление вещи ---")
+    print("\n Добавление вещи ")
     print("Владелец:", owner_name)
     print("Вещь:", item_name)
     print("Размер:", size)
@@ -17,7 +17,7 @@ def add_item(owner_name, item_name, size, condition):
 
 
 def check_item_availability(is_available):
-    print("\n--- Проверка доступности ---")
+    print("\n Проверка доступности ")
 
     if is_available:
         return "Вещь доступна для обмена."
@@ -26,7 +26,7 @@ def check_item_availability(is_available):
 
 
 def create_exchange_request(sender_name, offered_item, requested_item):
-    print("\n--- Создание запроса на обмен ---")
+    print("\n Создание запроса на обмен ")
     print("Отправитель:", sender_name)
     print("Предлагаемая вещь:", offered_item)
     print("Запрашиваемая вещь:", requested_item)
@@ -38,7 +38,7 @@ def create_exchange_request(sender_name, offered_item, requested_item):
 
 
 def process_exchange_request(request_status):
-    print("\n--- Обработка запроса ---")
+    print("\n Обработка запроса ")
 
     if request_status.lower() == "принят":
         return "Запрос принят. Можно оформить передачу."
@@ -51,7 +51,7 @@ def process_exchange_request(request_status):
 def create_transfer(sender_name, receiver_name):
     current_time = datetime.now()
 
-    print("\n--- Передача вещей ---")
+    print("\n Передача вещей ")
     print("Отправитель:", sender_name)
     print("Получатель:", receiver_name)
     print("Дата:", current_time.strftime("%d.%m.%Y %H:%M"))
@@ -60,7 +60,7 @@ def create_transfer(sender_name, receiver_name):
 
 
 def main():
-    print("=== Сервис обмена одеждой ===")
+    print(" Сервис обмена одеждой ")
 
     owner_name = "Анна"
     item_name = "Джинсовая куртка"
