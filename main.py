@@ -1,105 +1,127 @@
-from datetime import datetime
+# главный файл программы
+# тут собираем всё вместе и запускаем меню
+
+from items import (
+    add_item,
+    find_item,
+    filter_items_by_size,
+    sort_items,
+)
+from exchanges import (
+    create_exchange_request,
+    cancel_exchange_request,
+    get_active_requests,
+)
+from storage import (
+    load_items,
+    save_items,
+    load_exchanges,
+    save_exchanges,
+)
+from utils import input_str, input_int
 
 
-def add_item(owner_name, item_name, size, condition):
-    print("\n Добавление вещи ")
-    print("Владелец:", owner_name)
-    print("Вещь:", item_name)
-    print("Размер:", size)
-    print("Состояние:", condition)
+def show_items(items: list) -> None:
+    # выводим список вещей
+    if not items:
+        print("список вещей пуст")
+        return
 
-    if condition.lower() == "новое" or condition.lower() == "хорошее":
-        print("Вещь подходит для размещения.")
-        return True
-    else:
-        print("Вещь не может быть размещена для обмена.")
-        return False
-
-
-def check_item_availability(is_available):
-    print("\n Проверка доступности ")
-
-    if is_available:
-        return "Вещь доступна для обмена."
-    else:
-        return "Вещь недоступна для обмена."
-
-
-def create_exchange_request(sender_name, offered_item, requested_item):
-    print("\n Создание запроса на обмен ")
-    print("Отправитель:", sender_name)
-    print("Предлагаемая вещь:", offered_item)
-    print("Запрашиваемая вещь:", requested_item)
-
-    if offered_item != requested_item:
-        return "Запрос создан."
-    else:
-        return "Запрос не создан: вещи должны отличаться."
-
-
-def process_exchange_request(request_status):
-    print("\n Обработка запроса ")
-
-    if request_status.lower() == "принят":
-        return "Запрос принят. Можно оформить передачу."
-    elif request_status.lower() == "отклонён":
-        return "Запрос отклонён."
-    else:
-        return "Запрос ожидает решения."
-
-
-def create_transfer(sender_name, receiver_name):
-    current_time = datetime.now()
-
-    print("\n Передача вещей ")
-    print("Отправитель:", sender_name)
-    print("Получатель:", receiver_name)
-    print("Дата:", current_time.strftime("%d.%m.%Y %H:%M"))
-
-    return "Передача сформирована."
-
-
-def main():
-    print(" Сервис обмена одеждой ")
-
-    owner_name = "Анна"
-    item_name = "Джинсовая куртка"
-    size = "M"
-    condition = "хорошее"
-
-    item_added = add_item(
-        owner_name,
-        item_name,
-        size,
-        condition
-    )
-
-    print(check_item_availability(item_added))
-
-    if item_added:
-        sender_name = "Мария"
-        offered_item = "Белая толстовка"
-
-        request_result = create_exchange_request(
-            sender_name,
-            offered_item,
-            item_name
+    for item in items:
+        status = "доступна" if item["is_available"] else "недоступна"
+        print(
+            f"[{item['id']}] {item['item_name']} "
+            f"(размер {item['size']}, состояние: {item['condition']}, "
+            f"владелец: {item['owner_name']}) — {status}"
         )
 
-        print(request_result)
 
-        request_status = "принят"
+def show_exchanges(exchanges: list) -> None:
+    # выводим список запросов
+    if not exchanges:
+        print("список запросов пуст")
+        return
 
-        processing_result = process_exchange_request(request_status)
-        print(processing_result)
+    for ex in exchanges:
+        print(
+            f"[{ex['id']}] вещь id={ex['item_id']}, "
+            f"от: {ex['requester_name']}, статус: {ex['status']}"
+        )
 
-        if request_status.lower() == "принят":
-            transfer_result = create_transfer(
-                owner_name,
-                sender_name
-            )
 
-            print(transfer_result)
+def main() -> None:
+    # загружаем данные из файлов
+    items = load_items("data/items.json")
+    exchanges = load_exchanges("data/exchanges.json")
+
+    while True:
+        print("\n=== сервис обмена одеждой ===")
+        print("1. показать все вещи")
+        print("2. найти вещь по названию")
+        print("3. фильтр по размеру")
+        print("4. сортировать вещи")
+        print("5. добавить вещь")
+        print("6. создать запрос на обмен")
+        print("7. отменить запрос")
+        print("8. показать запросы")
+        print("0. выход")
+
+        choice = input_int("выберите действие: ")
+
+        if choice == 1:
+            show_items(items)
+
+        elif choice == 2:
+            query = input_str("введите название: ")
+            show_items(find_item(items, query))
+
+        elif choice == 3:
+            size = input_str("введите размер: ")
+            show_items(filter_items_by_size(items, size))
+
+        elif choice == 4:
+            show_items(sort_items(items))
+
+        elif choice == 5:
+            owner = input_str("имя владельца: ")
+            name = input_str("название вещи: ")
+            size = input_str("размер: ")
+            condition = input_str("состояние: ")
+
+            add_item(items, owner, name, size, condition)
+            print("вещь добавлена")
+
+        elif choice == 6:
+            item_id = input_int("id вещи: ")
+            requester = input_str("ваше имя: ")
+
+            result = create_exchange_request(exchanges, items, item_id, requester)
+
+            if result:
+                print(f"запрос создан, id запроса: {result['id']}")
+            else:
+                print("не удалось создать запрос")
+
+        elif choice == 7:
+            request_id = input_int("id запроса: ")
+
+            if cancel_exchange_request(exchanges, request_id):
+                print("запрос отменён")
+            else:
+                print("запрос не найден или уже отменён")
+
+        elif choice == 8:
+            show_exchanges(get_active_requests(exchanges))
+
+        elif choice == 0:
+            # сохраняем данные перед выходом
+            save_items("data/items.json", items)
+            save_exchanges("data/exchanges.json", exchanges)
+            print("данные сохранены, выход")
+            break
+
+        else:
+            print("неверный выбор")
 
 
 if __name__ == "__main__":

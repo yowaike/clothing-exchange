@@ -1,26 +1,21 @@
-# Virtual environment
-
+# виртуальное окружение
 venv/
 .venv/
 env/
 
-# Python cache
-
-**pycache**/
+# кэш питона
+__pycache__/
 *.py[cod]
 
-# IDE
-
+# иде
 .idea/
 .vscode/
 
-# Test and coverage
-
+# тесты и покрытие
 .pytest_cache/
 .coverage
 htmlcov/
 
-# OS files
-
+# ос
 .DS_Store
 Thumbs.db
