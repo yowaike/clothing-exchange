@@ -1,13 +1,13 @@
 # главный файл программы
-# тут собираем всё вместе и запускаем меню
 
-from items import (
+from models.items import (
     add_item,
     find_item,
     filter_items_by_size,
     sort_items,
 )
-from exchanges import (
+from models.users import add_user, get_user_by_id
+from models.exchanges import (
     create_exchange_request,
     cancel_exchange_request,
     get_active_requests,
@@ -15,6 +15,8 @@ from exchanges import (
 from storage import (
     load_items,
     save_items,
+    load_users,
+    save_users,
     load_exchanges,
     save_exchanges,
 )
@@ -28,12 +30,8 @@ def show_items(items: list) -> None:
         return
 
     for item in items:
-        status = "доступна" if item["is_available"] else "недоступна"
-        print(
-            f"[{item['id']}] {item['item_name']} "
-            f"(размер {item['size']}, состояние: {item['condition']}, "
-            f"владелец: {item['owner_name']}) — {status}"
-        )
+        # у объекта Item есть __str__, поэтому просто print(item)
+        print(item)
 
 
 def show_exchanges(exchanges: list) -> None:
@@ -42,17 +40,15 @@ def show_exchanges(exchanges: list) -> None:
         print("список запросов пуст")
         return
 
-    for ex in exchanges:
-        print(
-            f"[{ex['id']}] вещь id={ex['item_id']}, "
-            f"от: {ex['requester_name']}, статус: {ex['status']}"
-        )
+    for exchange in exchanges:
+        print(exchange)
 
 
 def main() -> None:
     # загружаем данные из файлов
     items = load_items("data/items.json")
-    exchanges = load_exchanges("data/exchanges.json")
+    users = load_users("data/users.json")
+    exchanges = load_exchanges("data/exchanges.json", items, users)
 
     while True:
         print("\n=== сервис обмена одеждой ===")
@@ -61,9 +57,10 @@ def main() -> None:
         print("3. фильтр по размеру")
         print("4. сортировать вещи")
         print("5. добавить вещь")
-        print("6. создать запрос на обмен")
-        print("7. отменить запрос")
-        print("8. показать запросы")
+        print("6. добавить пользователя")
+        print("7. создать запрос на обмен")
+        print("8. отменить запрос")
+        print("9. показать запросы")
         print("0. выход")
 
         choice = input_int("выберите действие: ")
@@ -87,22 +84,32 @@ def main() -> None:
             name = input_str("название вещи: ")
             size = input_str("размер: ")
             condition = input_str("состояние: ")
-
             add_item(items, owner, name, size, condition)
             print("вещь добавлена")
 
         elif choice == 6:
+            name = input_str("имя пользователя: ")
+            email = input_str("email: ")
+            add_user(users, name, email)
+            print("пользователь добавлен")
+
+        elif choice == 7:
             item_id = input_int("id вещи: ")
-            requester = input_str("ваше имя: ")
+            requester_id = input_int("id пользователя: ")
+
+            requester = get_user_by_id(users, requester_id)
+            if requester is None:
+                print("пользователь с таким id не найден")
+                continue
 
             result = create_exchange_request(exchanges, items, item_id, requester)
 
             if result:
-                print(f"запрос создан, id запроса: {result['id']}")
+                print(f"запрос создан, id запроса: {result.id}")
             else:
                 print("не удалось создать запрос")
 
-        elif choice == 7:
+        elif choice == 8:
             request_id = input_int("id запроса: ")
 
             if cancel_exchange_request(exchanges, request_id):
@@ -110,12 +117,13 @@ def main() -> None:
             else:
                 print("запрос не найден или уже отменён")
 
-        elif choice == 8:
+        elif choice == 9:
             show_exchanges(get_active_requests(exchanges))
 
         elif choice == 0:
-            # сохраняем данные перед выходом
+            # сохраняем всё перед выходом
             save_items("data/items.json", items)
+            save_users("data/users.json", users)
             save_exchanges("data/exchanges.json", exchanges)
             print("данные сохранены, выход")
             break
