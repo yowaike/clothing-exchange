@@ -1,0 +1,14 @@
+{% if item.is_available %}
+<a class="item-card" href="{% url 'items:item_detail' item.id %}">
+    <div class="item-card-visual">
+        <span class="item-size">{{ item.size|upper }}</span>
+        <span class="item-available">Доступна для обмена</span>
+        <span class="item-visual-mark" aria-hidden="true">↻</span>
+    </div>
+    <div class="item-card-info">
+        <p class="item-condition">{{ item.condition|capfirst }}</p>
+        <h3>{{ item.item_name|capfirst }}</h3>
+        <p class="item-owner">Владелец: {{ item.owner_name|capfirst }}</p>
+    </div>
+</a>
+{% endif %}

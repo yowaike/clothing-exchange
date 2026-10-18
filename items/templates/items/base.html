@@ -1,0 +1,37 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#fbfbf9">
+    <title>{% block title %}Круговорот вещей{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'items/style.css' %}">
+</head>
+<body>
+    <header class="site-header">
+        <a class="logo" href="{% url 'items:home' %}" aria-label="Круговорот вещей — главная">
+            <span class="logo-mark" aria-hidden="true">↻</span>
+            <span>Круговорот <span class="logo-light">вещей</span></span>
+        </a>
+
+        <nav aria-label="Основная навигация">
+            <a href="{% url 'items:home' %}">Главная</a>
+            <a href="#about">О проекте</a>
+        </nav>
+
+        <span class="header-note">Обмен с заботой</span>
+    </header>
+
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <a class="footer-logo" href="{% url 'items:home' %}">Круговорот вещей</a>
+        <p>Хорошие вещи заслуживают продолжения.</p>
+        <span>Осознаннее каждый день <span class="footer-dot">●</span></span>
+    </footer>
+    <script src="{% static 'items/main.js' %}" defer></script>
+</body>
+</html>

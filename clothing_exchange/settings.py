@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
+    'django.contrib.staticfiles',
     'items',
 ]
 
@@ -86,7 +86,9 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME': (
+            'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'
+        ),
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
@@ -126,4 +128,3 @@ MAILERS = {
         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
     },
 }
-

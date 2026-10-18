@@ -19,3 +19,5 @@ htmlcov/
 # ос
 .DS_Store
 Thumbs.db
+# Локальная база данных
+db.sqlite3

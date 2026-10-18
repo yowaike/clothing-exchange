@@ -1,0 +1,103 @@
+
+{% extends "items/base.html" %}
+{% load static %}
+
+{% block content %}
+<section class="catalog item-detail">
+    <a class="item-detail-back" href="{% url 'items:home' %}">
+        ← Назад в каталог
+    </a>
+
+    <div class="item-detail-layout">
+        <div class="item-detail-gallery">
+            <div class="item-detail-visual">
+                <img src="{% static 'items/images/clothing.jpg' %}"
+                     alt="{{ item.item_name }}">
+                <span class="item-size">{{ item.size|upper }}</span>
+            </div>
+
+            <div class="item-detail-thumbnails">
+                <img class="active"
+                     src="{% static 'items/images/clothing.jpg' %}"
+                     alt="Одежда на вешалках">
+                <div class="thumbnail-placeholder">♧</div>
+                <div class="thumbnail-placeholder">↻</div>
+                <div class="thumbnail-placeholder">✳</div>
+            </div>
+        </div>
+
+        <div class="item-detail-info">
+            <div class="item-detail-badges">
+                <span>{{ item.condition|capfirst }} состояние</span>
+                {% if item.is_available %}
+                    <span class="available">● Доступна для обмена</span>
+                {% else %}
+                    <span>Недоступна</span>
+                {% endif %}
+            </div>
+
+            <h1>{{ item.item_name|capfirst }}</h1>
+
+            <div class="item-detail-spec">
+                <span class="detail-icon">♧</span>
+                <span class="detail-muted">Размер: {{ item.size|upper }}</span>
+            </div>
+
+            <div class="item-detail-spec">
+                <span class="detail-icon">♧</span>
+                <span>Состояние: {{ item.condition|capfirst }}</span>
+            </div>
+
+            <div class="item-detail-owner">
+                <span class="detail-icon">♙</span>
+                <div>
+                    <span class="detail-muted">Владелец</span>
+                    <strong>{{ item.owner_name|capfirst }}</strong>
+                </div>
+            </div>
+
+            <div class="item-detail-eco">
+                <span class="eco-icon">♧</span>
+                <div>
+                    <strong>Давайте вещам вторую жизнь</strong>
+                    <p>Обменивайтесь вещами и сделайте мир немного более осознанным — вместе!</p>
+                </div>
+            </div>
+
+            <a class="item-detail-button"
+               href="{% url 'items:home' %}#catalog">
+                ↻ &nbsp; Смотреть другие вещи
+            </a>
+        </div>
+    </div>
+
+    {% if similar_items %}
+    <section class="similar-items">
+        <div class="similar-items-heading">
+            <div>
+                <h2>Похожие вещи</h2>
+                <p>Возможно, они вам тоже понравятся</p>
+            </div>
+        </div>
+
+        <div class="similar-items-grid">
+            {% for similar in similar_items %}
+            <a class="similar-item-card"
+               href="{% url 'items:item_detail' similar.id %}">
+                <div class="similar-item-image">
+                    <img src="{% static 'items/images/clothing.jpg' %}"
+                         alt="{{ similar.item_name }}">
+                    <span class="similar-size">{{ similar.size|upper }}</span>
+                    <span class="similar-available">Доступна</span>
+                </div>
+                <div class="similar-item-info">
+                    <h3>{{ similar.item_name|capfirst }}</h3>
+                    <p>{{ similar.condition|capfirst }}</p>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+</section>
+{% endblock %}
