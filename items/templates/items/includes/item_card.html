@@ -1,8 +1,10 @@
 {% if item.is_available %}
 <a class="item-card" href="{% url 'items:item_detail' item.id %}">
     <div class="item-card-visual">
-        <span class="item-size">{{ item.size|upper }}</span>
-        <span class="item-available">Доступна для обмена</span>
+        <span class="item-size">
+            {{ item.size|default:"Размер не указан"|upper }}
+        </span>
+        <span class="item-available">Вещь ждёт владельца</span>
         <span class="item-visual-mark" aria-hidden="true">↻</span>
     </div>
     <div class="item-card-info">
