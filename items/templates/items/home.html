@@ -10,7 +10,7 @@
         <h1>Освободи место.<br><span>Открой новую историю.</span></h1>
         <p class="hero-text">
             У каждой вещи есть своя история.
-            Дай ей продолжиться в другом гардеробе:
+            Дай ей продлиться в другом гардеробе:
             обменивайся любимой одеждой и находи что-то своё.
         </p>
         <a class="primary-button" href="#catalog">
@@ -49,10 +49,30 @@
             <p class="eyebrow">Найди вещь для следующей главы</p>
             <h2 id="catalog-title">Каталог вещей</h2>
         </div>
-        <span class="catalog-count">{{ items|length }} {% with count=items|length %}{% if count == 1 %}вещь{% elif count >= 2 and count <= 4 %}вещи{% else %}вещей{% endif %}{% endwith %}</span>
+        <span class="catalog-count">
+            {{ page_obj.paginator.count }}
+            {% with count=page_obj.paginator.count %}
+                {% if count == 1 %}вещь
+                {% elif count >= 2 and count <= 4 %}вещи
+                {% else %}вещей{% endif %}
+            {% endwith %}
+        </span>
     </div>
+
+    <div class="catalog-controls">
+        <form method="get" class="sort-form">
+            <label for="sort">Сортировать по:</label>
+            <select id="sort" name="sort" onchange="this.form.submit()">
+                <option value="item_name" {% if sort_by == 'item_name' %}selected{% endif %}>Названию</option>
+                <option value="-item_name" {% if sort_by == '-item_name' %}selected{% endif %}>Названию (по убыванию)</option>
+                <option value="size" {% if sort_by == 'size' %}selected{% endif %}>Размеру</option>
+                <option value="condition" {% if sort_by == 'condition' %}selected{% endif %}>Состоянию</option>
+            </select>
+        </form>
+    </div>
+
     <div class="catalog-grid">
-        {% for item in items %}
+        {% for item in page_obj %}
             {% include 'items/includes/item_card.html' with item=item %}
         {% empty %}
         <div class="catalog-empty">
@@ -62,5 +82,25 @@
         </div>
         {% endfor %}
     </div>
+
+    {% if page_obj.has_other_pages %}
+    <nav class="pagination" aria-label="Навигация по страницам каталога">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}{% if sort_by %}&sort={{ sort_by }}{% endif %}" class="pagination-link">← Назад</a>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <span class="pagination-current">{{ num }}</span>
+            {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
+                <a href="?page={{ num }}{% if sort_by %}&sort={{ sort_by }}{% endif %}" class="pagination-link">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if sort_by %}&sort={{ sort_by }}{% endif %}" class="pagination-link">Вперёд →</a>
+        {% endif %}
+    </nav>
+    {% endif %}
 </section>
 {% endblock %}

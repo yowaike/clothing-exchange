@@ -1331,3 +1331,67 @@ a:focus-visible {
         grid-template-columns: 1fr;
     }
 }
+/* Пагинация */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 1px solid var(--line);
+}
+
+.pagination-link {
+    padding: 10px 18px;
+    border-radius: 20px;
+    background: #F7F5F0;
+    color: var(--ink);
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 180ms ease, transform 180ms ease;
+}
+
+.pagination-link:hover {
+    background: #E8EFE9;
+    transform: translateY(-2px);
+}
+
+.pagination-current {
+    padding: 10px 18px;
+    border-radius: 20px;
+    background: var(--blue);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+}
+.catalog-controls {
+    margin-bottom: 24px;
+}
+
+.sort-form {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.sort-form label {
+    font-size: 14px;
+    color: var(--muted);
+}
+
+.sort-form select {
+    padding: 8px 14px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #fff;
+    font-size: 14px;
+    font-family: inherit;
+    cursor: pointer;
+}
+.statistics-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 22px;
+    margin-bottom: 48px;
+}

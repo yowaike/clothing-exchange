@@ -11,10 +11,21 @@
         </div>
     </div>
 
+    <div class="statistics-summary">
+        <div class="stat-card">
+            <h3>Всего доступных вещей</h3>
+            <p class="stat-count">{{ total_items }}</p>
+        </div>
+        <div class="stat-card">
+            <h3>Среднее количество вещей на владельца</h3>
+            <p class="stat-count">{{ avg_items_per_owner }}</p>
+        </div>
+    </div>
+
     <div class="statistics-grid">
         {% for stat in statistics %}
         <article class="stat-card">
-            <h3>{{ stat.owner_name|capfirst }}</h3>
+            <h3>{{ stat.owner__name|capfirst }}</h3>
             <p class="stat-count">
                 {{ stat.items_count }} 
                 {% with count=stat.items_count %}
