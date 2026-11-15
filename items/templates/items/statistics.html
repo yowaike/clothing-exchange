@@ -1,0 +1,36 @@
+{% extends 'items/base.html' %}
+
+{% block title %}Статистика — Круговорот вещей{% endblock %}
+
+{% block content %}
+<section class="catalog">
+    <div class="section-heading">
+        <div>
+            <p class="eyebrow">Сводка по каталогу</p>
+            <h2>Статистика</h2>
+        </div>
+    </div>
+
+    <div class="statistics-grid">
+        {% for stat in statistics %}
+        <article class="stat-card">
+            <h3>{{ stat.owner_name|capfirst }}</h3>
+            <p class="stat-count">
+                {{ stat.items_count }} 
+                {% with count=stat.items_count %}
+                    {% if count == 1 %}вещь
+                    {% elif count >= 2 and count <= 4 %}вещи
+                    {% else %}вещей{% endif %}
+                {% endwith %}
+            </p>
+        </article>
+        {% empty %}
+        <div class="catalog-empty">
+            <span aria-hidden="true">↻</span>
+            <h3>Данных пока нет</h3>
+            <p>Статистика появится, когда в каталоге будут вещи.</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

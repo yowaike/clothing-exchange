@@ -1,6 +1,14 @@
+
+{% load static %}
+
 {% if item.is_available %}
 <a class="item-card" href="{% url 'items:item_detail' item.id %}">
     <div class="item-card-visual">
+        <img
+            src="{% static 'items/images/clothing.jpg' %}"
+            alt="{{ item.item_name }}"
+            class="item-card-image"
+        >
         <span class="item-size">
             {{ item.size|default:"Размер не указан"|upper }}
         </span>

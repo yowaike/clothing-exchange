@@ -1,0 +1,48 @@
+{% extends 'items/base.html' %}
+{% load static %}
+
+{% block title %}Поиск вещей — Круговорот вещей{% endblock %}
+
+{% block content %}
+<section class="search-section">
+    <div class="section-heading">
+        <div>
+            <p class="eyebrow">Найдите вещь по названию</p>
+            <h2>Поиск вещей</h2>
+        </div>
+    </div>
+
+    <form method="get" class="search-form">
+        <input
+            type="search"
+            name="q"
+            value="{{ query }}"
+            placeholder="Например: кофта, платье, куртка..."
+            aria-label="Поиск по названию вещи"
+            autofocus
+        >
+        <button type="submit">Найти <span aria-hidden="true">→</span></button>
+    </form>
+
+    {% if query %}
+        <p class="search-result-info">
+            По запросу «<strong>{{ query }}</strong>» найдено:
+            {{ items|length }} {% with count=items|length %}{% if count == 1 %}вещь{% elif count >= 2 and count <= 4 %}вещи{% else %}вещей{% endif %}{% endwith %}
+        </p>
+
+        <div class="catalog-grid">
+            {% for item in items %}
+                {% include 'items/includes/item_card.html' with item=item %}
+            {% empty %}
+                <div class="catalog-empty">
+                    <span aria-hidden="true">↻</span>
+                    <h3>Ничего не найдено</h3>
+                    <p>Попробуйте изменить запрос или загляните в каталог.</p>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="search-hint">Введите название вещи, чтобы начать поиск.</p>
+    {% endif %}
+</section>
+{% endblock %}

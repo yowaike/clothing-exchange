@@ -1196,3 +1196,138 @@ a:focus-visible {
         gap: 12px;
     }
 }
+/* ==========================================
+   Форма поиска вещей
+   ========================================== */
+
+.search-section {
+    margin: 88px 0 100px;
+}
+
+.search-form {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    max-width: 560px;
+    margin: 0 0 40px;
+}
+
+.search-form input[type="search"] {
+    flex: 1;
+    padding: 14px 20px;
+    font-size: 15px;
+    font-family: inherit;
+    color: var(--ink);
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    outline: none;
+    transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.search-form input[type="search"]:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(73, 104, 88, 0.12);
+}
+
+.search-form input[type="search"]::placeholder {
+    color: var(--muted);
+}
+
+.search-form button {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 0;
+    border: none;
+    border-bottom: 1px solid var(--blue);
+    background: transparent;
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color 180ms ease;
+}
+
+.search-form button:hover {
+    color: var(--blue-dark);
+    border-bottom-color: var(--blue-dark);
+}
+
+.search-result-info {
+    margin-bottom: 28px;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.search-result-info strong {
+    color: var(--ink);
+    font-weight: 500;
+}
+
+.search-hint {
+    margin-top: 16px;
+    color: var(--muted);
+    font-size: 14px;
+    font-style: italic;
+}
+
+@media (max-width: 600px) {
+    .search-section {
+        margin: 64px 0;
+    }
+
+    .search-form {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .search-form button {
+        justify-content: center;
+    }
+}
+/* ==========================================
+   Статистика
+   ========================================== */
+
+.statistics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 22px;
+}
+
+.stat-card {
+    padding: 25px;
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    background: #F7F5F0; /* Цвет как у .feature-card */
+    transition: background 180ms ease, transform 180ms ease;
+}
+
+.stat-card:hover {
+    background: #E8EFE9;
+    transform: translateY(-2px);
+}
+
+.stat-card h3 {
+    margin: 0 0 12px;
+    font-size: 19px;
+    font-weight: 500;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+}
+
+.stat-count {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+@media (max-width: 600px) {
+    .statistics-grid {
+        grid-template-columns: 1fr;
+    }
+}
