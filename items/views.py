@@ -1,81 +1,71 @@
-from django.http import Http404
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
+from django.db.models import Count
 
-from db.database import get_connection
+from .models import Item
 
 
 def home(request):
-    """Главная страница: список доступных вещей."""
-    with get_connection() as conn:
-        rows = conn.execute("""
-            SELECT id, owner_name, item_name, size, condition, is_available
-            FROM items
-            WHERE is_available = 1
-            ORDER BY item_name
-        """).fetchall()
-
-    return render(request, "items/home.html", {"items": rows})
+    """
+    Главная страница: список доступных вещей.
+    ORM-аналог: SELECT * FROM items WHERE is_available = 1 ORDER BY item_name
+    """
+    items = Item.objects.filter(is_available=True).order_by('item_name')
+    return render(request, "items/home.html", {"items": items})
 
 
 def item_detail(request, item_id):
-    """Страница конкретной вещи."""
-    with get_connection() as conn:
-        row = conn.execute("""
-            SELECT id, owner_name, item_name, size, condition, is_available
-            FROM items
-            WHERE id = ?
-        """, (item_id,)).fetchone()
+    """
+    Страница конкретной вещи.
+    ORM-аналог: SELECT * FROM items WHERE id = ? AND is_available = 1
+    """
+    # get_object_or_404 автоматически вернет страницу 404, если вещь не найдена
+    item = get_object_or_404(Item, pk=item_id, is_available=True)
 
-    if row is None or row["is_available"] == 0:
-        raise Http404("Вещь не найдена или недоступна для обмена")
-
-    with get_connection() as conn:
-        similar_rows = conn.execute("""
-            SELECT id, owner_name, item_name, size, condition
-            FROM items
-            WHERE size = ? AND id != ? AND is_available = 1
-            LIMIT 5
-        """, (row["size"], row["id"])).fetchall()
+    # Поиск похожих вещей того же размера (исключаем текущую вещь)
+    # ORM-аналог: SELECT * FROM items WHERE size = ? AND id != ? AND
+    # is_available = 1 LIMIT 5
+    similar_items = Item.objects.filter(
+        size=item.size,
+        is_available=True
+    ).exclude(pk=item.pk)[:5]
 
     return render(
         request,
         "items/item_detail.html",
         {
-            "item": row,
-            "similar_items": similar_rows,
+            "item": item,
+            "similar_items": similar_items,
         },
     )
 
 
 def search_items(request):
-    """Поиск вещей по названию (параметризованный SQL-запрос с LIKE)."""
+    """
+    Поиск вещей по названию.
+    ORM-аналог: SELECT * FROM items WHERE item_name LIKE '%query%' AND is_available = 1
+    """
     query = request.GET.get("q", "").strip()
     items = []
 
     if query:
-        with get_connection() as conn:
-            search_term = f"%{query}%"
-            items = conn.execute(
-                """
-                SELECT id, owner_name, item_name, size, condition, is_available
-                FROM items
-                WHERE item_name LIKE ? AND is_available = 1
-                ORDER BY item_name
-                """,
-                (search_term,),
-            ).fetchall()
+        # __icontains обеспечивает регистронезависимый поиск по вхождению строки
+        items = Item.objects.filter(
+            item_name__icontains=query,
+            is_available=True
+        ).order_by('item_name')
 
     return render(request, "items/search.html", {"items": items, "query": query})
 
 
 def statistics(request):
-    """Страница статистики: количество вещей у каждого владельца (GROUP BY, COUNT)."""
-    with get_connection() as conn:
-        rows = conn.execute("""
-            SELECT owner_name, COUNT(id) AS items_count
-            FROM items
-            GROUP BY owner_name
-            ORDER BY items_count DESC
-        """).fetchall()
+    """
+    Страница статистики: количество вещей у каждого владельца.
+    ORM-аналог: SELECT owner__name, COUNT(id) AS items_count FROM items GROUP BY owner__name ORDER BY items_count DESC
+    """
+    # values('owner__name') группирует по имени владельца (через ForeignKey)
+    # annotate добавляет вычисляемое поле items_count
+    stats = Item.objects.values('owner__name').annotate(
+        items_count=Count('id')
+    ).order_by('-items_count')
 
-    return render(request, "items/statistics.html", {"statistics": rows})
+    return render(request, "items/statistics.html", {"statistics": stats})

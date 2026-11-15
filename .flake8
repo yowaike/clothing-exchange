@@ -1,9 +1,11 @@
 [flake8]
-exclude =
+exclude = 
     .venv,
-    .venv-1,
     venv,
     __pycache__,
-    .pytest_cache,
+    items/migrations,
     .git
-max-line-length = 88
+max-line-length = 120
+ignore = 
+    E402,
+    F541
