@@ -1,28 +1,42 @@
+from django.views.decorators.http import require_POST
 from django.core.paginator import Paginator
 from django.db.models import Avg, Count, Q
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 
+from .forms import ItemFilterForm, ItemForm
 from .models import Item
 
 
 def home(request):
-    """Главная страница: каталог доступных вещей с пагинацией и сортировкой."""
+    """Главная страница: каталог с фильтрацией, сортировкой и пагинацией."""
+    form = ItemFilterForm(request.GET or None)
     items = Item.objects.filter(is_available=True)
 
-    sort_by = request.GET.get('sort', 'item_name')
-    allowed_sorts = ['item_name', '-item_name', 'size', 'condition']
-    if sort_by not in allowed_sorts:
-        sort_by = 'item_name'
+    if form.is_bound and form.is_valid():
+        size = form.cleaned_data.get("size")
+        condition = form.cleaned_data.get("condition")
+        sort_by = form.cleaned_data.get("sort") or "item_name"
 
-    items = items.order_by(sort_by)
+        if size:
+            items = items.filter(size__icontains=size)
+        if condition:
+            items = items.filter(condition__icontains=condition)
+
+        allowed_sorts = ["item_name", "-item_name", "size", "condition"]
+        if sort_by in allowed_sorts:
+            items = items.order_by(sort_by)
+        else:
+            items = items.order_by("item_name")
+    else:
+        items = items.order_by("item_name")
 
     paginator = Paginator(items, 6)
-    page_number = request.GET.get('page')
+    page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
     return render(request, "items/home.html", {
         "page_obj": page_obj,
-        "sort_by": sort_by,
+        "form": form,
     })
 
 
@@ -79,3 +93,52 @@ def statistics(request):
         "total_items": total_items,
         "avg_items_per_owner": round(avg_items_per_owner or 0, 1),
     })
+
+
+def item_create(request):
+    """Представление для создания новой вещи."""
+    if request.method == "POST":
+        # Передаём форме данные и файлы (для загрузки изображения)
+        form = ItemForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect("items:home")
+    else:
+        # При GET-запросе создаём пустую форму с начальными значениями
+        form = ItemForm(initial={"is_available": True})
+
+    return render(request, "items/item_form.html", {"form": form})
+
+
+def item_update(request, item_id):
+    """Редактирование существующей вещи."""
+    item = get_object_or_404(Item, pk=item_id)
+
+    if request.method == "POST":
+        form = ItemForm(
+            request.POST,
+            request.FILES,
+            instance=item,
+        )
+        if form.is_valid():
+            form.save()
+            return redirect("items:item_detail", item_id=item.pk)
+    else:
+        form = ItemForm(instance=item)
+
+    return render(
+        request,
+        "items/item_form.html",
+        {
+            "form": form,
+            "item": item,
+        },
+    )
+
+
+@require_POST
+def item_delete(request, item_id):
+    """Удаление вещи. Выполняется только через POST-запрос."""
+    item = get_object_or_404(Item, pk=item_id)
+    item.delete()
+    return redirect("items:home")

@@ -1,14 +1,14 @@
-
 {% load static %}
 
 {% if item.is_available %}
 <a class="item-card" href="{% url 'items:item_detail' item.id %}">
     <div class="item-card-visual">
-        <img
-            src="{% static 'items/images/clothing.jpg' %}"
-            alt="{{ item.item_name }}"
-            class="item-card-image"
-        >
+        {% if item.image %}
+            <img src="{{ item.image.url }}" alt="{{ item.item_name }}" class="item-card-image">
+        {% else %}
+            <img src="{% static 'items/images/clothing.jpg' %}" alt="{{ item.item_name }}" class="item-card-image">
+        {% endif %}
+        
         <span class="item-size">
             {{ item.size|default:"Размер не указан"|upper }}
         </span>
@@ -18,7 +18,7 @@
     <div class="item-card-info">
         <p class="item-condition">{{ item.condition|capfirst }}</p>
         <h3>{{ item.item_name|capfirst }}</h3>
-        <p class="item-owner">Владелец: {{ item.owner_name|capfirst }}</p>
+        <p class="item-owner">Владелец: {{ item.owner.name|capfirst }}</p>
     </div>
 </a>
 {% endif %}

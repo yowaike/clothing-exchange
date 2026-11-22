@@ -1,6 +1,7 @@
-
 {% extends "items/base.html" %}
 {% load static %}
+
+{% block title %}{{ item.item_name|capfirst }} — Круговорот вещей{% endblock %}
 
 {% block content %}
 <section class="catalog item-detail">
@@ -11,15 +12,20 @@
     <div class="item-detail-layout">
         <div class="item-detail-gallery">
             <div class="item-detail-visual">
-                <img src="{% static 'items/images/clothing.jpg' %}"
-                     alt="{{ item.item_name }}">
+                {% if item.image %}
+                    <img src="{{ item.image.url }}" alt="{{ item.item_name }}">
+                {% else %}
+                    <img src="{% static 'items/images/clothing.jpg' %}" alt="{{ item.item_name }}">
+                {% endif %}
                 <span class="item-size">{{ item.size|upper }}</span>
             </div>
 
             <div class="item-detail-thumbnails">
-                <img class="active"
-                     src="{% static 'items/images/clothing.jpg' %}"
-                     alt="Одежда на вешалках">
+                {% if item.image %}
+                    <img class="active" src="{{ item.image.url }}" alt="{{ item.item_name }}">
+                {% else %}
+                    <img class="active" src="{% static 'items/images/clothing.jpg' %}" alt="{{ item.item_name }}">
+                {% endif %}
                 <div class="thumbnail-placeholder">♧</div>
                 <div class="thumbnail-placeholder">↻</div>
                 <div class="thumbnail-placeholder">✳</div>
@@ -52,7 +58,7 @@
                 <span class="detail-icon">♙</span>
                 <div>
                     <span class="detail-muted">Владелец</span>
-                    <strong>{{ item.owner_name|capfirst }}</strong>
+                    <strong>{{ item.owner.name|capfirst }}</strong>
                 </div>
             </div>
 
@@ -64,10 +70,26 @@
                 </div>
             </div>
 
-            <a class="item-detail-button"
-               href="{% url 'items:home' %}#catalog">
-                ↻ &nbsp; Смотреть другие вещи
-            </a>
+                        <div class="item-detail-actions">
+                <a class="item-detail-button"
+                   href="{% url 'items:item_update' item.id %}">
+                    &nbsp; Редактировать вещь
+                </a>
+                
+                <form method="post" action="{% url 'items:item_delete' item.id %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="item-detail-button item-detail-button-danger" onclick="return confirm('Вы уверены, что хотите удалить эту вещь?');">
+                        &nbsp; Удалить вещь
+                    </button>
+                </form>
+
+                <a class="item-detail-button item-detail-button-secondary"
+                   href="{% url 'items:home' %}#catalog">
+                    &nbsp; Смотреть другие вещи
+                </a>
+            </div>
+                </a>
+            </div>
         </div>
     </div>
 
@@ -85,8 +107,11 @@
             <a class="similar-item-card"
                href="{% url 'items:item_detail' similar.id %}">
                 <div class="similar-item-image">
-                    <img src="{% static 'items/images/clothing.jpg' %}"
-                         alt="{{ similar.item_name }}">
+                    {% if similar.image %}
+                        <img src="{{ similar.image.url }}" alt="{{ similar.item_name }}">
+                    {% else %}
+                        <img src="{% static 'items/images/clothing.jpg' %}" alt="{{ similar.item_name }}">
+                    {% endif %}
                     <span class="similar-size">{{ similar.size|upper }}</span>
                     <span class="similar-available">Доступна</span>
                 </div>

@@ -60,14 +60,33 @@
     </div>
 
     <div class="catalog-controls">
-        <form method="get" class="sort-form">
-            <label for="sort">Сортировать по:</label>
-            <select id="sort" name="sort" onchange="this.form.submit()">
-                <option value="item_name" {% if sort_by == 'item_name' %}selected{% endif %}>Названию</option>
-                <option value="-item_name" {% if sort_by == '-item_name' %}selected{% endif %}>Названию (по убыванию)</option>
-                <option value="size" {% if sort_by == 'size' %}selected{% endif %}>Размеру</option>
-                <option value="condition" {% if sort_by == 'condition' %}selected{% endif %}>Состоянию</option>
-            </select>
+        <form method="get" class="filter-form">
+            <div class="filter-field">
+                {{ form.size.label_tag }}
+                {{ form.size }}
+                {% for error in form.size.errors %}
+                <div class="form-error">{{ error }}</div>
+                {% endfor %}
+            </div>
+            
+            <div class="filter-field">
+                {{ form.condition.label_tag }}
+                {{ form.condition }}
+                {% for error in form.condition.errors %}
+                <div class="form-error">{{ error }}</div>
+                {% endfor %}
+            </div>
+            
+            <div class="filter-field">
+                {{ form.sort.label_tag }}
+                {{ form.sort }}
+                {% for error in form.sort.errors %}
+                <div class="form-error">{{ error }}</div>
+                {% endfor %}
+            </div>
+            
+            <button type="submit">Применить фильтры</button>
+            <a href="{% url 'items:home' %}" class="reset-link">Сбросить</a>
         </form>
     </div>
 
@@ -86,19 +105,19 @@
     {% if page_obj.has_other_pages %}
     <nav class="pagination" aria-label="Навигация по страницам каталога">
         {% if page_obj.has_previous %}
-        <a href="?page={{ page_obj.previous_page_number }}{% if sort_by %}&sort={{ sort_by }}{% endif %}" class="pagination-link">← Назад</a>
+        <a href="?page={{ page_obj.previous_page_number }}" class="pagination-link">← Назад</a>
         {% endif %}
 
         {% for num in page_obj.paginator.page_range %}
             {% if page_obj.number == num %}
                 <span class="pagination-current">{{ num }}</span>
             {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
-                <a href="?page={{ num }}{% if sort_by %}&sort={{ sort_by }}{% endif %}" class="pagination-link">{{ num }}</a>
+                <a href="?page={{ num }}" class="pagination-link">{{ num }}</a>
             {% endif %}
         {% endfor %}
 
         {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}{% if sort_by %}&sort={{ sort_by }}{% endif %}" class="pagination-link">Вперёд →</a>
+        <a href="?page={{ page_obj.next_page_number }}" class="pagination-link">Вперёд →</a>
         {% endif %}
     </nav>
     {% endif %}

@@ -1,0 +1,49 @@
+{% extends 'items/base.html' %}
+
+{% block title %}
+    {% if item %}Редактирование вещи{% else %}Добавить вещь{% endif %} — Круговорот вещей
+{% endblock %}
+
+{% block content %}
+<section class="container form-section">
+    <a href="{% if item %}{% url 'items:item_detail' item.id %}{% else %}{% url 'items:home' %}{% endif %}" class="form-back">
+        ← Назад
+    </a>
+
+    <h1>
+        {% if item %}Редактирование вещи{% else %}Добавить новую вещь{% endif %}
+    </h1>
+
+    <form method="post" enctype="multipart/form-data" class="item-form">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+        <div class="form-alert">
+            {% for error in form.non_field_errors %}
+            <div>{{ error }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% for field in form %}
+        <div class="form-field">
+            {{ field.label_tag }}
+            {{ field }}
+            {% if field.help_text %}
+            <div class="form-help">{{ field.help_text }}</div>
+            {% endif %}
+            {% for error in field.errors %}
+            <div class="form-error">{{ error }}</div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">
+                {% if item %}Сохранить изменения{% else %}Создать вещь{% endif %}
+            </button>
+            <a href="{% url 'items:home' %}" class="btn-secondary">Отмена</a>
+        </div>
+    </form>
+</section>
+{% endblock %}

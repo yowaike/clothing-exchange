@@ -1,181 +1,99 @@
+```markdown
 # Сервис обмена одеждой «Круговорот вещей»
 
-## Описание проекта
+Веб-приложение для обмена одеждой, позволяющее находить новые вещи и продлевать срок их использования. Проект разрабатывается в рамках дисциплины «Технологии разработки приложений на базе фреймворков».
 
-«Круговорот вещей» — веб-приложение для обмена одеждой, позволяющее пользователям находить новые вещи и продлевать срок их использования. Сервис предоставляет каталог доступных вещей, поиск по названию и состоянию, а также просмотр статистики по владельцам.
-
-Проект разрабатывается в рамках дисциплины «Технологии разработки приложений на базе фреймворков» и является сквозным индивидуальным проектом.
-
-## Используемые технологии
-
-- Python 3.14
-- Django 6.1
-- SQLite
-- Django ORM
-- HTML, CSS, JavaScript
-- JSON
-- pytest
-- flake8
-- Django Debug Toolbar
+## Технологии
+- Python 3.14, Django 6.1, SQLite
+- Django ORM, Django Forms, Django Debug Toolbar
+- HTML, CSS, JavaScript, JSON
+- pytest, flake8, Pillow
 
 ## Структура проекта
-
 ```text
 clothing-exchange/
 ├── clothing_exchange/     # настройки Django и корневые URL-маршруты
-├── items/                 # основное приложение проекта
+├── items/                 # основное приложение
 │   ├── migrations/        # миграции базы данных
 │   ├── static/items/      # CSS, JavaScript и изображения
 │   ├── templates/items/   # HTML-шаблоны
 │   ├── models.py          # модели User, Item, ExchangeRequest
 │   ├── views.py           # представления страниц
 │   ├── urls.py            # маршруты приложения
+│   ├── forms.py           # классы форм (Form, ModelForm)
 │   └── admin.py           # настройка административной панели
 ├── models/                # классы предметной области предыдущих работ
 ├── data/                  # исходные данные JSON
-├── db/                    # работа с базой данных
-│   ├── database.py
-│   └── import_sqlite_to_orm.py
+├── db/                    # работа с базой данных (database.py, import_sqlite_to_orm.py)
 ├── sql/                   # SQL-файлы практической работы №7
-│   ├── schema.sql
-│   └── queries.sql
 ├── tests/                 # автоматические тесты
 ├── manage.py              # утилита управления Django
 └── README.md              # описание проекта
 ```
 
 ## Модели данных
-
-Начиная с практической работы №9, для описания структуры базы данных используется Django ORM. В приложении `items` реализованы три модели.
-
-### User — пользователь
-
-- `id` — первичный ключ;
-- `name` — имя пользователя;
-- `email` — адрес электронной почты (уникальный).
-
-### Item — вещь
-
-- `id` — первичный ключ;
-- `owner` — владелец вещи (связь с моделью User);
-- `item_name` — название вещи;
-- `size` — размер;
-- `condition` — состояние вещи;
-- `is_available` — доступность для обмена.
-
-### ExchangeRequest — заявка на обмен
-
-- `id` — первичный ключ;
-- `item` — вещь, на которую подана заявка;
-- `requester` — пользователь, подавший заявку;
-- `status` — статус заявки (`active`, `cancelled`, `completed`).
+- **User**: `id`, `name`, `email` (уникальный).
+- **Item**: `id`, `owner` (ForeignKey), `item_name`, `size`, `condition`, `is_available`, `image` (ImageField).
+- **ExchangeRequest**: `id`, `item` (ForeignKey), `requester` (ForeignKey), `status`.
 
 ## Реализованные страницы
+- **Главная (`/`)**: каталог с пагинацией, фильтрацией и сортировкой.
+- **Карточка вещи (`/items/<id>/`)**: детальная информация, похожие предложения и управление вещью.
+- **Поиск (`/search/`)**: поиск по названию или состоянию (без учета регистра).
+- **Статистика (`/statistics/`)**: агрегированные данные по владельцам.
+- **Административная панель (`/admin/`)**: управление данными с inline-формами и фильтрами.
 
-- **Главная страница (`/`)** — каталог доступных для обмена вещей с пагинацией и сортировкой.
-- **Карточка вещи (`/items/<id>/`)** — подробная информация о выбранной вещи и похожие предложения.
-- **Поиск (`/search/`)** — поиск вещей по названию или состоянию без учёта регистра.
-- **Статистика (`/statistics/`)** — отображение количества вещей у каждого владельца с агрегацией данных.
-
-## Работа с базой данных
-
-В ходе разработки проекта было реализовано два этапа работы с базой данных.
-
-### Практическая работа №7 — SQLite
-
-На данном этапе использовалась база данных SQLite. Доступ к данным осуществлялся с помощью библиотеки `sqlite3` и прямых SQL-запросов. Файлы `sql/schema.sql`, `sql/queries.sql` и `db/database.py` сохранены в проекте для демонстрации предыдущей реализации.
-
-### Практическая работа №9 — Django ORM
-
-На следующем этапе проект был переведён на Django ORM. Структура базы данных определяется моделями Django, а изменения применяются с помощью миграций.
-
-Для получения и обработки данных используются ORM-запросы (`filter`, `exclude`, `annotate`, `select_related`). Также подготовлен скрипт `db/import_sqlite_to_orm.py` для переноса данных из предыдущей базы.
+## Этапы разработки и работа с данными
+1. **ПР7 (SQLite)**: прямые SQL-запросы. Файлы `sql/` и `db/database.py` сохранены как история.
+2. **ПР9 (Django ORM)**: переход на модели, миграции и ORM-запросы (`filter`, `exclude`, `annotate`, `select_related`). Скрипт `db/import_sqlite_to_orm.py` для переноса данных.
+3. **ПР10 (Admin)**: кастомизация списков, фильтров и inline-форм в админке, анализ запросов через Debug Toolbar.
+4. **ПР11 (Forms)**: формы фильтрации (`forms.Form`) и создания/редактирования (`ModelForm`). Реализована серверная валидация (`clean`, `clean_<field>`), защита CSRF, удаление через POST-запрос и загрузка изображений (`MEDIA_ROOT`, `MEDIA_URL`).
 
 ### Примеры ORM-запросов
-
-Получение доступных вещей:
-
 ```python
+# Фильтрация и сортировка
 Item.objects.filter(is_available=True).order_by('item_name')
+
+# Поиск по нескольким полям (Q-объекты)
+Item.objects.filter(Q(item_name__icontains=query) | Q(condition__icontains=query))
+
+# Агрегация и группировка
+Item.objects.values('owner__name').annotate(items_count=Count('id')).order_by('-items_count')
 ```
 
-Поиск по названию или состоянию:
-
-```python
-Item.objects.filter(
-    Q(item_name__icontains=query) | Q(condition__icontains=query),
-    is_available=True
-)
-```
-
-Подсчёт количества вещей у каждого владельца:
-
-```python
-Item.objects.values('owner__name').annotate(
-    items_count=Count('id')
-).order_by('-items_count')
-```
-
-## Установка и запуск проекта
-
-1. Клонировать репозиторий:
-
-```powershell
-git clone <адрес репозитория>
-cd clothing-exchange
-```
-
+## Установка и запуск
+1. Клонировать репозиторий и перейти в папку:
+   ```powershell
+   git clone <адрес_репозитория>
+   cd clothing-exchange
+   ```
 2. Создать и активировать виртуальное окружение:
-
-```powershell
-python -m venv .venv
-.venv\Scripts\activate
-```
-
+   ```powershell
+   python -m venv .venv
+   .venv\Scripts\activate
+   ```
 3. Установить зависимости:
-
-```powershell
-pip install -r requirements.txt
-```
-
-4. Применить миграции:
-
-```powershell
-python manage.py migrate
-```
-
-5. При необходимости перенести данные из базы предыдущей практической работы:
-
-```powershell
-python db/import_sqlite_to_orm.py
-```
-
-6. Создать суперпользователя для доступа к административной панели:
-
-```powershell
-python manage.py createsuperuser
-```
-
-7. Запустить сервер:
-
-```powershell
-python manage.py runserver
-```
-
-8. Открыть в браузере:
-
-- Сайт: `http://127.0.0.1:8000/`
-- Административная панель: `http://127.0.0.1:8000/admin/`
+   ```powershell
+   pip install -r requirements.txt
+   ```
+4. Применить миграции и перенести данные (опционально):
+   ```powershell
+   python manage.py migrate
+   python db/import_sqlite_to_orm.py
+   ```
+5. Создать суперпользователя и запустить сервер:
+   ```powershell
+   python manage.py createsuperuser
+   python manage.py runserver
+   ```
+6. Открыть в браузере: `http://127.0.0.1:8000/` и `http://127.0.0.1:8000/admin/`
 
 ## Проверка проекта
-
-Для проверки работоспособности и качества кода используются следующие команды:
-
 ```powershell
 # Проверка конфигурации Django
 python manage.py check
 
-# Проверка миграций
+# Проверка состояния миграций
 python manage.py showmigrations
 
 # Запуск автоматических тестов
@@ -183,4 +101,5 @@ python -m pytest -v
 
 # Проверка качества кода
 python -m flake8 . --extend-exclude=venv,.venv,__pycache__,items/migrations
+```
 ```

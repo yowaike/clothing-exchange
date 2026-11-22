@@ -16,7 +16,6 @@ class User(models.Model):
 
 class Item(models.Model):
     """Вещь, доступная для обмена."""
-    # Связываем вещь с пользователем через ForeignKey
     owner = models.ForeignKey(
         User,
         on_delete=models.PROTECT,
@@ -27,6 +26,12 @@ class Item(models.Model):
     size = models.CharField(max_length=10, verbose_name="Размер")
     condition = models.CharField(max_length=50, verbose_name="Состояние")
     is_available = models.BooleanField(default=True, verbose_name="Доступна для обмена")
+    image = models.ImageField(
+        upload_to="items/",
+        blank=True,
+        null=True,
+        verbose_name="Изображение"
+    )
 
     def __str__(self):
         return self.item_name
